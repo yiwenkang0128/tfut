@@ -56,7 +56,7 @@ class _HomePageState extends State<HomePage> {
       backgroundColor: Colors.white, // 确保背景颜色为白色
       appBar: HomeAppBar(
         scaffoldKey: _scaffoldKey,
-        selectedDate: '$_selectedYear年$_selectedMonth月',
+        selectedDate: '$_selectedYear Year $_selectedMonth Month',
         onMenuPressed: () {
           _scaffoldKey.currentState!.openDrawer();
         },

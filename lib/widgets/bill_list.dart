@@ -51,7 +51,7 @@ class BillList extends StatelessWidget {
                               fontSize: 18, fontWeight: FontWeight.bold),
                         ),
                         Text(
-                          '净支出: $netExpense',
+                          'Net Expense: $netExpense',
                           style: TextStyle(fontSize: 16, color: Colors.black),
                         ),
                       ],

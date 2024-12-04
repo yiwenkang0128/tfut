@@ -9,42 +9,42 @@ class CreatePage extends StatefulWidget {
 }
 
 class _CreatePageState extends State<CreatePage> {
-  String selectedCategory = '三餐'; // 默认选中的分类
-  String selectedTab = '支出'; // 默认选中的标签
+  String selectedCategory = 'Meal'; // 默认选中的分类
+  String selectedTab = 'Expense'; // 默认选中的标签
   List<String> categories = [
-    '三餐',
-    '衣服',
-    '旅行',
-    '宠物',
-    '日用品',
-    '住房',
-    '医疗',
-    '娱乐',
-    '其他',
+    'Meal',
+    'Clothing',
+    'Travel',
+    'Pet',
+    'Daily Necessities',
+    'Housing',
+    'Medical',
+    'Entertainment',
+    'Others',
   ]; // 默认分类
 
   void _updateCategories(String tab) {
     setState(() {
       selectedTab = tab;
-      if (tab == '支出') {
+      if (tab == 'Expense') {
         categories = [
-          '三餐',
-          '衣服',
-          '旅行',
-          '宠物',
-          '日用品',
-          '住房',
-          '医疗',
-          '娱乐',
-          '其他',
+          'Meal',
+          'Clothing',
+          'Travel',
+          'Pet',
+          'Daily Necessities',
+          'Housing',
+          'Medical',
+          'Entertainment',
+          'Others',
         ];
-      } else if (tab == '收入') {
+      } else if (tab == 'Income') {
         categories = [
-          '转账',
-          '工资',
-          '退款',
-          '礼物',
-          '其他',
+          'Transfer',
+          'Salary',
+          'Refund',
+          'Gift',
+          'Others',
         ];
       }
     });

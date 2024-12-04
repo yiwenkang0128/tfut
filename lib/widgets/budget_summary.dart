@@ -32,7 +32,7 @@ class BudgetSummary extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(
-                '本月预算',
+                'Monthly Budget',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               Row(
@@ -64,7 +64,7 @@ class BudgetSummary extends StatelessWidget {
                       ],
                     ),
                     Text(
-                      '剩余额度',
+                      'Remaining',
                       style: TextStyle(fontSize: 12, color: Colors.black54),
                     ),
                   ],
@@ -90,7 +90,7 @@ class BudgetSummary extends StatelessWidget {
                       ],
                     ),
                     Text(
-                      '已消费',
+                      'Already Consumed',
                       style: TextStyle(fontSize: 12, color: Colors.black54),
                     ),
                   ],

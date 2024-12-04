@@ -33,12 +33,13 @@ class _TopNavigationState extends State<TopNavigation> {
         children: [
           GestureDetector(
             onTap: () {
-              widget.onTabChanged('支出');
+              widget.onTabChanged('Expense');
             },
             child: Text(
-              '支出',
+              'Expense',
               style: TextStyle(
-                color: widget.selectedTab == '支出' ? Colors.red : Colors.grey,
+                color:
+                    widget.selectedTab == 'Expense' ? Colors.red : Colors.grey,
                 fontSize: 18,
                 fontWeight: FontWeight.bold,
               ),
@@ -47,12 +48,13 @@ class _TopNavigationState extends State<TopNavigation> {
           SizedBox(width: 20),
           GestureDetector(
             onTap: () {
-              widget.onTabChanged('收入');
+              widget.onTabChanged('Income');
             },
             child: Text(
-              '收入',
+              'Income',
               style: TextStyle(
-                color: widget.selectedTab == '收入' ? Colors.red : Colors.grey,
+                color:
+                    widget.selectedTab == 'Income' ? Colors.red : Colors.grey,
                 fontSize: 18,
               ),
             ),

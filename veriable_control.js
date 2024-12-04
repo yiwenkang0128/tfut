@@ -30,9 +30,7 @@ const BillList = {
 
 const createPage = {
     //这里列出的是需要通过回调函数存入数据库的变量
-    _selectedYear: int,
-    _selectedMonth: int,
-    _selectedDay: int,
+    selectedTab: string,
     selectedCategory: string,
     _selectedAmount: int,
     _selectedNote: string,

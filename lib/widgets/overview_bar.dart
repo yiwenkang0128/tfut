@@ -41,11 +41,11 @@ class OverviewBar extends StatelessWidget {
                       children: [
                         Padding(
                           padding: EdgeInsets.symmetric(horizontal: 16),
-                          child: Text("月"),
+                          child: Text("Month"),
                         ),
                         Padding(
                           padding: EdgeInsets.symmetric(horizontal: 16),
-                          child: Text("年"),
+                          child: Text("Year"),
                         ),
                       ],
                       isSelected: [
@@ -72,7 +72,7 @@ class OverviewBar extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      "$selectedYear年 $selectedMonth月",
+                      "${selectedYear}Year ${selectedMonth}Month",
                       style:
                           TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                     ),
@@ -115,7 +115,7 @@ class OverviewBar extends StatelessWidget {
                         return DropdownMenuItem<int>(
                           value: year,
                           child: Text(
-                            "$year年",
+                            "${year}Year",
                             style: TextStyle(
                                 fontSize: 15,
                                 fontWeight: FontWeight.bold,
