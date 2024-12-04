@@ -1,21 +1,70 @@
 import 'package:flutter/material.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../services/user_service.dart';
 
 class LoginPage extends StatefulWidget {
+  const LoginPage({super.key});
   @override
-  _LoginPageState createState() => _LoginPageState();
+  LoginPageState createState() => LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+  final UserService _userService = UserService();
 
-  void _login() {
+  // Handle login logic
+  Future<void> _login() async {
     if (_formKey.currentState!.validate()) {
-      Navigator.pushNamed(context, '/home');
+      try {
+        final email = _emailController.text;
+        final password = _passwordController.text;
+
+        // Authenticate user
+        final user = await _userService.getUserByEmailAndPassword(email, password);
+
+        if (user != null) {
+          // Save userId in SharedPreferences
+          final prefs = await SharedPreferences.getInstance();
+          await prefs.setString('userId', user['id']);
+
+          if (mounted) {
+            Navigator.pushReplacementNamed(
+              context,
+              '/home',
+              arguments: {'userId': user['id']},
+            );
+          }
+        } else {
+          _showErrorDialog('Invalid email or password');
+        }
+      } catch (e) {
+        _showErrorDialog('An error occurred. Please try again later.');
+      }
     }
   }
 
+  // Show error dialog
+  void _showErrorDialog(String message) {
+    showDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text('Login Failed'),
+          content: Text(message),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  // Validate email
   String? _validateEmail(String? value) {
     if (value == null || value.isEmpty) {
       return 'Please enter your email';
@@ -25,6 +74,13 @@ class _LoginPageState extends State<LoginPage> {
       return 'Please enter a valid email';
     }
     return null;
+  }
+
+  @override
+  void dispose() {
+    _emailController.dispose();
+    _passwordController.dispose();
+    super.dispose();
   }
 
   @override
@@ -38,23 +94,23 @@ class _LoginPageState extends State<LoginPage> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                Text(
+                const Text(
                   'Login',
                   style: TextStyle(fontSize: 32, fontWeight: FontWeight.bold),
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 TextFormField(
                   controller: _emailController,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Email',
                     border: OutlineInputBorder(),
                   ),
                   validator: _validateEmail,
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 TextFormField(
                   controller: _passwordController,
-                  decoration: InputDecoration(
+                  decoration: const InputDecoration(
                     labelText: 'Password',
                     border: OutlineInputBorder(),
                   ),
@@ -66,20 +122,17 @@ class _LoginPageState extends State<LoginPage> {
                     return null;
                   },
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 ElevatedButton(
-                  style: ButtonStyle(
-                      backgroundColor:
-                          MaterialStateProperty.all(Colors.orange[100])),
                   onPressed: _login,
-                  child: Text('Login'),
+                  child: const Text('Login'),
                 ),
-                SizedBox(height: 20),
+                const SizedBox(height: 20),
                 TextButton(
                   onPressed: () {
                     Navigator.pushNamed(context, '/register');
                   },
-                  child: Text('Don\'t have an account? Register here'),
+                  child: const Text('Don\'t have an account? Register here'),
                 ),
               ],
             ),

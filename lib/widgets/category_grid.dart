@@ -5,7 +5,7 @@ class CategoryGrid extends StatelessWidget {
   final String selectedCategory;
   final ValueChanged<String> onCategorySelected;
 
-  CategoryGrid({
+  const CategoryGrid({super.key, 
     required this.categories,
     required this.selectedCategory,
     required this.onCategorySelected,
@@ -15,8 +15,8 @@ class CategoryGrid extends StatelessWidget {
   Widget build(BuildContext context) {
     return GridView.builder(
       padding: const EdgeInsets.all(16.0),
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 5,
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 4,
         childAspectRatio: 1.0,
         crossAxisSpacing: 10,
         mainAxisSpacing: 10,
@@ -35,11 +35,13 @@ class CategoryGrid extends StatelessWidget {
                     ? Colors.red
                     : Colors.orange[200],
                 radius: 20,
-                child: Icon(Icons.category, color: Colors.white),
+                child: const Icon(Icons.category, color: Colors.white),
               ),
-              SizedBox(height: 8),
+              const SizedBox(height: 8),
               Text(
                 category,
+                maxLines: 1,
+                overflow: TextOverflow.ellipsis,
                 style: TextStyle(
                   color:
                       selectedCategory == category ? Colors.red : Colors.black,

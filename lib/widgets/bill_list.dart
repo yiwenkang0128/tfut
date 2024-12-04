@@ -13,7 +13,7 @@ class BillList extends StatelessWidget {
       child: ClipRRect(
         borderRadius: BorderRadius.circular(16.0), // 圆角裁剪父容器和子组件
         child: Container(
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             color: Colors.white, // 整个父容器背景为浅灰色
           ),
           child: ListView.builder(
@@ -47,12 +47,21 @@ class BillList extends StatelessWidget {
                       children: [
                         Text(
                           date,
-                          style: TextStyle(
-                              fontSize: 18, fontWeight: FontWeight.bold),
+                          style: const TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                         Text(
-                          'Net Expense: $netExpense',
-                          style: TextStyle(fontSize: 16, color: Colors.black),
+                          netExpense.startsWith('+')
+                              ? 'Net Income: $netExpense'
+                              : 'Net Expense: $netExpense',
+                          style: TextStyle(
+                            fontSize: 16,
+                            color: netExpense.startsWith('+')
+                                ? Colors.red
+                                : Colors.green,
+                          ),
                         ),
                       ],
                     ),
@@ -76,7 +85,7 @@ class BillList extends StatelessWidget {
                         children: [
                           Row(
                             children: [
-                              Text(
+                              const Text(
                                 "• ",
                                 style: TextStyle(
                                   fontSize: 18,
@@ -85,14 +94,15 @@ class BillList extends StatelessWidget {
                               ),
                               Text(
                                 expense['category'],
-                                style: TextStyle(
+                                style: const TextStyle(
                                     fontSize: 16, color: Colors.black),
                               ),
                             ],
                           ),
                           Text(
                             '-${expense['amount']}',
-                            style: TextStyle(fontSize: 16, color: Colors.red),
+                            style: const TextStyle(
+                                fontSize: 16, color: Colors.red),
                           ),
                         ],
                       ),
@@ -117,7 +127,7 @@ class BillList extends StatelessWidget {
                         children: [
                           Row(
                             children: [
-                              Text(
+                              const Text(
                                 "• ",
                                 style: TextStyle(
                                   fontSize: 18,
@@ -126,14 +136,15 @@ class BillList extends StatelessWidget {
                               ),
                               Text(
                                 income['category'],
-                                style: TextStyle(
+                                style: const TextStyle(
                                     fontSize: 16, color: Colors.black),
                               ),
                             ],
                           ),
                           Text(
                             '+${income['amount']}',
-                            style: TextStyle(fontSize: 16, color: Colors.blue),
+                            style: const TextStyle(
+                                fontSize: 16, color: Colors.blue),
                           ),
                         ],
                       ),

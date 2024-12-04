@@ -2,57 +2,60 @@ import 'package:flutter/material.dart';
 
 class InputPanel extends StatefulWidget {
   final VoidCallback onSave;
+  final ValueChanged<double> onAmountChanged;
+  final ValueChanged<DateTime> onDateChanged;
 
-  InputPanel({required this.onSave});
+  const InputPanel({
+    super.key,
+    required this.onSave,
+    required this.onAmountChanged,
+    required this.onDateChanged,
+  });
 
   @override
-  _InputPanelState createState() => _InputPanelState();
+  InputPanelState createState() => InputPanelState();
 }
 
-class _InputPanelState extends State<InputPanel> {
-  String _currentExpression = ''; // 当前计算表达式
-  String _amount = '0'; // 当前金额结果
-  String _lastResult = '0'; // 上一个结果
+class InputPanelState extends State<InputPanel> {
+  String _currentExpression = '';
+  String _amount = '0';
+  String _lastResult = '0';
+  DateTime _selectedDate = DateTime.now();
 
-  // 添加数字或符号到计算表达式
   void _addToExpression(String input) {
     setState(() {
       if (input == '+' || input == '-') {
-        // 如果是运算符，确保当前表达式有效并以数字结尾
         if (_currentExpression.isNotEmpty &&
             !_currentExpression.endsWith('+') &&
             !_currentExpression.endsWith('-')) {
           _currentExpression += input;
         } else if (_currentExpression.isEmpty) {
-          // 如果当前表达式为空，则用上一个结果作为起点
           _currentExpression = _lastResult + input;
         }
       } else {
         if (_currentExpression == '0') {
-          _currentExpression = input; // 初始为0时，替换
+          _currentExpression = input;
         } else {
-          _currentExpression += input; // 否则追加数字
+          _currentExpression += input;
         }
       }
-      _updateAmount(); // 更新金额结果
+      _updateAmount();
     });
   }
 
-  // 删除最后一个字符
   void _deleteLast() {
     setState(() {
       if (_currentExpression.isNotEmpty) {
         _currentExpression =
             _currentExpression.substring(0, _currentExpression.length - 1);
         if (_currentExpression.isEmpty) {
-          _currentExpression = '0'; // 清空后重置为0
+          _currentExpression = '0';
         }
       }
-      _updateAmount(); // 更新金额结果
+      _updateAmount();
     });
   }
 
-  // 更新金额结果，仅显示计算结果
   void _updateAmount() {
     try {
       final expression =
@@ -70,14 +73,14 @@ class _InputPanelState extends State<InputPanel> {
         }
       }
 
-      _amount = result.toStringAsFixed(2); // 显示两位小数
-      _lastResult = _amount; // 更新上一个结果
+      _amount = result.toStringAsFixed(2);
+      _lastResult = _amount;
+      widget.onAmountChanged(result);
     } catch (e) {
-      _amount = _lastResult; // 遇到错误时保持上一个结果
+      _amount = _lastResult;
     }
   }
 
-  // 清空表达式和结果
   void _clear() {
     setState(() {
       _currentExpression = '0';
@@ -86,60 +89,57 @@ class _InputPanelState extends State<InputPanel> {
     });
   }
 
+  Future<void> _selectDate(BuildContext context) async {
+    final DateTime? pickedDate = await showDatePicker(
+      context: context,
+      initialDate: _selectedDate,
+      firstDate: DateTime(2000), // Set the minimum date
+      lastDate: DateTime(2100), // Set the maximum date
+    );
+
+    if (pickedDate != null && pickedDate != _selectedDate) {
+      setState(() {
+        _selectedDate = pickedDate;
+        widget.onDateChanged(pickedDate);
+      });
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(16.0),
+      padding: const EdgeInsets.all(16.0),
       decoration: BoxDecoration(
         color: Colors.grey[100],
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20.0)),
+        borderRadius: const BorderRadius.vertical(top: Radius.circular(20.0)),
       ),
       child: Column(
         children: [
-          // 第一行：输入框和金额显示
           Row(
             children: [
               Expanded(
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: TextField(
-                        controller: TextEditingController(
-                            text: '2024'), // Year input field
-                        keyboardType: TextInputType.number,
-                      ),
+                child: GestureDetector(
+                  onTap: () => _selectDate(context),
+                  child: Container(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 12.0, horizontal: 16.0),
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey),
+                      borderRadius: BorderRadius.circular(8.0),
                     ),
-                    const SizedBox(width: 8),
-                    Text('年'),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: TextField(
-                        controller: TextEditingController(
-                            text: '12'), // Month input field
-                        keyboardType: TextInputType.number,
-                      ),
+                    child: Text(
+                      '${_selectedDate.month}/${_selectedDate.day}/${_selectedDate.year}',
+                      style: const TextStyle(fontSize: 16),
                     ),
-                    const SizedBox(width: 8),
-                    Text('月'),
-                    const SizedBox(width: 8),
-                    Expanded(
-                      child: TextField(
-                        controller:
-                            TextEditingController(text: '3'), // Day input field
-                        keyboardType: TextInputType.number,
-                      ),
-                    ),
-                    const SizedBox(width: 8),
-                    Text('日'),
-                  ],
+                  ),
                 ),
               ),
               SizedBox(
                 width: 150,
                 child: Text(
                   textAlign: TextAlign.right,
-                  _amount, // 显示计算结果或上一个结果
-                  style: TextStyle(
+                  _amount,
+                  style: const TextStyle(
                     color: Colors.red,
                     fontSize: 20,
                     fontWeight: FontWeight.bold,
@@ -148,14 +148,13 @@ class _InputPanelState extends State<InputPanel> {
               ),
             ],
           ),
-          SizedBox(height: 16.0),
-          // 第二行：计算器
+          const SizedBox(height: 16.0),
           Expanded(
             child: GridView.builder(
               itemCount: 16,
-              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 4, // 四列
-                childAspectRatio: 2.5, // 高宽比
+              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 4,
+                childAspectRatio: 2.5,
               ),
               itemBuilder: (context, index) {
                 final buttons = [
@@ -171,10 +170,10 @@ class _InputPanelState extends State<InputPanel> {
                   '8',
                   '9',
                   '+',
-                  '再记',
+                  'Add New',
                   '0',
                   '.',
-                  '保存',
+                  'Save',
                 ];
                 final button = buttons[index];
 
@@ -184,20 +183,20 @@ class _InputPanelState extends State<InputPanel> {
                       _deleteLast();
                     } else if (button == '+' || button == '-') {
                       _addToExpression(button);
-                    } else if (button == '再记') {
+                    } else if (button == 'Add New') {
                       _clear();
-                    } else if (button == '保存') {
+                    } else if (button == 'Save') {
                       widget.onSave();
                     } else {
                       _addToExpression(button);
                     }
                   },
                   child: Container(
-                    margin: EdgeInsets.all(4.0),
+                    margin: const EdgeInsets.all(4.0),
                     decoration: BoxDecoration(
-                      color: button == '保存'
+                      color: button == 'Save'
                           ? Colors.red
-                          : button == '再记'
+                          : button == 'Add New'
                               ? Colors.grey
                               : Colors.white,
                       borderRadius: BorderRadius.circular(8.0),
@@ -206,7 +205,7 @@ class _InputPanelState extends State<InputPanel> {
                       child: Text(
                         button,
                         style: TextStyle(
-                          color: button == '保存' || button == '再记'
+                          color: button == 'Save' || button == 'Add New'
                               ? Colors.white
                               : Colors.black,
                           fontSize: 18,

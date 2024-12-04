@@ -3,11 +3,15 @@ import 'package:i_budget/widgets/avatar_generator.dart';
 import 'package:i_budget/widgets/profile_item.dart';
 
 class ProfilePage extends StatefulWidget {
+  final String userId;
+
+  const ProfilePage({required this.userId, super.key});
+
   @override
-  _ProfilePageState createState() => _ProfilePageState();
+  ProfilePageState createState() => ProfilePageState();
 }
 
-class _ProfilePageState extends State<ProfilePage> {
+class ProfilePageState extends State<ProfilePage> {
   String username = "John Doe";
   String email = "john.doe@example.com";
   String password = "********";

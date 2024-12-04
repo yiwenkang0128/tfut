@@ -4,28 +4,29 @@ class TopNavigation extends StatefulWidget implements PreferredSizeWidget {
   final String selectedTab;
   final ValueChanged<String> onTabChanged;
 
-  TopNavigation({
+  const TopNavigation({
+    super.key,
     required this.selectedTab,
     required this.onTabChanged,
   });
 
   @override
-  _TopNavigationState createState() => _TopNavigationState();
+  TopNavigationState createState() => TopNavigationState();
 
   @override
-  Size get preferredSize => Size.fromHeight(kToolbarHeight);
+  Size get preferredSize => const Size.fromHeight(kToolbarHeight);
 }
 
-class _TopNavigationState extends State<TopNavigation> {
+class TopNavigationState extends State<TopNavigation> {
   @override
   Widget build(BuildContext context) {
     return AppBar(
       backgroundColor: Colors.white,
       elevation: 0,
       leading: IconButton(
-        icon: Icon(Icons.close, color: Colors.black),
+        icon: const Icon(Icons.close, color: Colors.black),
         onPressed: () {
-          Navigator.of(context).pushNamed('/home');
+          Navigator.pop(context);
         },
       ),
       title: Row(
@@ -45,7 +46,7 @@ class _TopNavigationState extends State<TopNavigation> {
               ),
             ),
           ),
-          SizedBox(width: 20),
+          const SizedBox(width: 20),
           GestureDetector(
             onTap: () {
               widget.onTabChanged('Income');

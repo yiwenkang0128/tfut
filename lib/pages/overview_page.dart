@@ -5,11 +5,15 @@ import '../widgets/overview_data.dart';
 import '../widgets/categorized_statistics.dart';
 
 class OverviewPage extends StatefulWidget {
+  final String? userId;
+
+  const OverviewPage({this.userId, super.key});
+
   @override
-  _OverviewPageState createState() => _OverviewPageState();
+  OverviewPageState createState() => OverviewPageState();
 }
 
-class _OverviewPageState extends State<OverviewPage> {
+class OverviewPageState extends State<OverviewPage> {
   String selectedView = "month"; // month or year
   int selectedYear = DateTime.now().year;
   int selectedMonth = DateTime.now().month;
