@@ -100,21 +100,50 @@ class _InputPanelState extends State<InputPanel> {
           Row(
             children: [
               Expanded(
-                child: TextField(
-                  style: TextStyle(color: Colors.black),
-                  decoration: InputDecoration(
-                    hintText: '备注...',
-                    hintStyle: TextStyle(color: Colors.grey),
-                    border: InputBorder.none,
-                  ),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: TextField(
+                        controller: TextEditingController(
+                            text: '2024'), // Year input field
+                        keyboardType: TextInputType.number,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Text('年'),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: TextField(
+                        controller: TextEditingController(
+                            text: '12'), // Month input field
+                        keyboardType: TextInputType.number,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Text('月'),
+                    const SizedBox(width: 8),
+                    Expanded(
+                      child: TextField(
+                        controller:
+                            TextEditingController(text: '3'), // Day input field
+                        keyboardType: TextInputType.number,
+                      ),
+                    ),
+                    const SizedBox(width: 8),
+                    Text('日'),
+                  ],
                 ),
               ),
-              Text(
-                _amount, // 显示计算结果或上一个结果
-                style: TextStyle(
-                  color: Colors.red,
-                  fontSize: 20,
-                  fontWeight: FontWeight.bold,
+              SizedBox(
+                width: 150,
+                child: Text(
+                  textAlign: TextAlign.right,
+                  _amount, // 显示计算结果或上一个结果
+                  style: TextStyle(
+                    color: Colors.red,
+                    fontSize: 20,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ],

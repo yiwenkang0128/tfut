@@ -34,7 +34,6 @@ class HomeAppBar extends StatelessWidget implements PreferredSizeWidget {
               children: [
                 Text(selectedDate),
                 MouseRegion(
-                  cursor: SystemMouseCursors.click, // 鼠标悬停时显示手形
                   child: GestureDetector(
                     onTap: onCalendarTap,
                     child: Padding(
