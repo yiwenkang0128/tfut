@@ -8,7 +8,7 @@ class OverviewBar extends StatelessWidget {
   final int selectedMonth;
   final Function(int, int?) onYearMonthChanged;
 
-  OverviewBar({
+  const OverviewBar({super.key, 
     required this.selectedView,
     required this.onSelectedViewChanged,
     required this.selectedYear,
@@ -24,11 +24,11 @@ class OverviewBar extends StatelessWidget {
         Container(
           height: 50,
           color: Colors.white,
-          padding: EdgeInsets.symmetric(vertical: 8.0),
+          padding: const EdgeInsets.symmetric(vertical: 8.0),
           child: Row(
             children: [
               IconButton(
-                icon: Icon(Icons.arrow_back),
+                icon: const Icon(Icons.arrow_back),
                 onPressed: () {
                   Navigator.pushNamed(context, '/home'); // 跳转到 /home
                 },
@@ -38,6 +38,14 @@ class OverviewBar extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     ToggleButtons(
+                      isSelected: [
+                        selectedView == "month",
+                        selectedView == "year"
+                      ],
+                      onPressed: (index) {
+                        onSelectedViewChanged(index == 0 ? "month" : "year");
+                      },
+                      fillColor: Colors.orange[100],
                       children: [
                         Padding(
                           padding: EdgeInsets.symmetric(horizontal: 16),
@@ -47,15 +55,7 @@ class OverviewBar extends StatelessWidget {
                           padding: EdgeInsets.symmetric(horizontal: 16),
                           child: Text("年"),
                         ),
-                      ],
-                      isSelected: [
-                        selectedView == "month",
-                        selectedView == "year"
-                      ],
-                      onPressed: (index) {
-                        onSelectedViewChanged(index == 0 ? "month" : "year");
-                      },
-                      fillColor: Colors.orange[100], // 选中时背景颜色
+                      ], // 选中时背景颜色
                     ),
                   ],
                 ),
@@ -74,9 +74,9 @@ class OverviewBar extends StatelessWidget {
                     Text(
                       "$selectedYear年 $selectedMonth月",
                       style:
-                          TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
+                          const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
                     ),
-                    SizedBox(width: 8.0),
+                    const SizedBox(width: 8.0),
                     MouseRegion(
                       cursor: SystemMouseCursors.click,
                       child: GestureDetector(
@@ -99,7 +99,7 @@ class OverviewBar extends StatelessWidget {
                           );
                         },
                         child:
-                            Icon(Icons.arrow_drop_down, color: Colors.orange),
+                            const Icon(Icons.arrow_drop_down, color: Colors.orange),
                       ),
                     ),
                   ],
@@ -109,14 +109,14 @@ class OverviewBar extends StatelessWidget {
                   children: [
                     DropdownButton<int>(
                       value: selectedYear,
-                      icon: Icon(Icons.arrow_drop_down, color: Colors.orange),
+                      icon: const Icon(Icons.arrow_drop_down, color: Colors.orange),
                       items: List.generate(10, (index) {
                         int year = DateTime.now().year - index;
                         return DropdownMenuItem<int>(
                           value: year,
                           child: Text(
                             "$year年",
-                            style: TextStyle(
+                            style: const TextStyle(
                                 fontSize: 15,
                                 fontWeight: FontWeight.bold,
                                 decoration: TextDecoration.none),

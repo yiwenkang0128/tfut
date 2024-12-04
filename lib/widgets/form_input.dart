@@ -7,7 +7,7 @@ class FormInput extends StatelessWidget {
   final String? Function(String?)? validator;
   final double? width;
 
-  FormInput({
+  const FormInput({super.key, 
     required this.controller,
     required this.labelText,
     this.obscureText = false,
@@ -17,14 +17,14 @@ class FormInput extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
+    return SizedBox(
       width: width,
       child: TextFormField(
         controller: controller,
         obscureText: obscureText,
         decoration: InputDecoration(
           labelText: labelText,
-          border: OutlineInputBorder(),
+          border: const OutlineInputBorder(),
         ),
         validator: validator,
       ),

@@ -7,17 +7,17 @@ Widget generateAvatar(String accountName) {
   return Container(
     width: 60, // 调整头像大小
     height: 60,
-    decoration: BoxDecoration(
+    decoration: const BoxDecoration(
       shape: BoxShape.circle,
     ),
     child: CircleAvatar(
       backgroundColor: Colors.orange[50],
       child: Text(
         initial,
-        style: TextStyle(
+        style: const TextStyle(
           fontSize: 24,
           fontWeight: FontWeight.bold,
-          color: const Color.fromARGB(255, 255, 128, 0), // 文本颜色
+          color: Color.fromARGB(255, 255, 128, 0), // 文本颜色
         ),
       ),
     ),

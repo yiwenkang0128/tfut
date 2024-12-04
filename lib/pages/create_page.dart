@@ -1,53 +1,138 @@
 import 'package:flutter/material.dart';
-import 'package:i_budget/widgets/category_grid.dart';
-import 'package:i_budget/widgets/create_top_bar.dart';
-import 'package:i_budget/widgets/input_panel.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../services/bill_service.dart';
+import '../widgets/category_grid.dart';
+import '../widgets/create_top_bar.dart';
+import '../widgets/input_panel.dart';
+import '../services/category_service.dart';
 
 class CreatePage extends StatefulWidget {
+  final String? userId;
+
+  const CreatePage({this.userId, super.key});
+
   @override
-  _CreatePageState createState() => _CreatePageState();
+  CreatePageState createState() => CreatePageState();
 }
 
-class _CreatePageState extends State<CreatePage> {
-  String selectedCategory = '三餐'; // 默认选中的分类
-  String selectedTab = '支出'; // 默认选中的标签
-  List<String> categories = [
-    '三餐',
-    '衣服',
-    '旅行',
-    '宠物',
-    '日用品',
-    '住房',
-    '医疗',
-    '娱乐',
-    '其他',
-  ]; // 默认分类
+class CreatePageState extends State<CreatePage> {
+  final CategoryService _categoryService = CategoryService();
+  final BillService _billService = BillService();
 
-  void _updateCategories(String tab) {
+  String selectedCategory = '';
+  String selectedTab = 'Expense';
+  List<String> categories = [];
+  double amount = 0.0;
+  String? _userId;
+  bool _isLoading = true;
+  String? _errorMessage;
+
+  @override
+  void initState() {
+    super.initState();
+    _initialize();
+  }
+
+  Future<void> _initialize() async {
+    try {
+      await _loadUserId();
+      if (_userId != null) {
+        await _loadCategories(selectedTab);
+      } else {
+        _redirectToLogin();
+      }
+    } catch (e) {
+      setState(() {
+        _errorMessage = 'Initialization error: $e';
+      });
+    }
+  }
+
+  Future<void> _loadUserId() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _userId = widget.userId ?? prefs.getString('userId');
+    });
+  }
+
+  Future<void> _loadCategories(String tab) async {
+    try {
+      setState(() {
+        _isLoading = true;
+        _errorMessage = null;
+      });
+
+      if (_userId == null) throw Exception('User ID is null');
+
+      final data = await _categoryService.getCategoriesByUserAndType(
+        _userId!,
+        tab,
+      );
+
+      final defaultCategories = tab == 'Expense'
+          ? ['Food', 'Transportation', 'Housing', 'Entertainment']
+          : ['Salary', 'Investments', 'Gifts'];
+
+      setState(() {
+        categories = data.isNotEmpty ? data : defaultCategories;
+        selectedCategory = categories.isNotEmpty ? categories.first : '';
+      });
+    } catch (e) {
+      setState(() {
+        _errorMessage = 'Failed to load categories: $e';
+      });
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  void _redirectToLogin() {
+    Navigator.pushReplacementNamed(context, '/login');
+  }
+
+  void _updateCategories(String tab) async {
     setState(() {
       selectedTab = tab;
-      if (tab == '支出') {
-        categories = [
-          '三餐',
-          '衣服',
-          '旅行',
-          '宠物',
-          '日用品',
-          '住房',
-          '医疗',
-          '娱乐',
-          '其他',
-        ];
-      } else if (tab == '收入') {
-        categories = [
-          '转账',
-          '工资',
-          '退款',
-          '礼物',
-          '其他',
-        ];
-      }
+      _isLoading = true;
     });
+    await _loadCategories(tab);
+    setState(() {
+      _isLoading = false;
+    });
+  }
+
+  Future<void> _saveBill() async {
+    try {
+      if (_userId == null) throw Exception('User ID is null');
+      if (amount <= 0) throw Exception('Amount must be greater than zero');
+
+      setState(() {
+        _isLoading = true;
+      });
+
+      await _billService.addBill(
+        userId: _userId!,
+        category: selectedCategory,
+        amount: amount,
+        date: DateTime.now(),
+      );
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Bill added successfully')),
+      );
+
+      Navigator.of(context).pop(true);
+    } catch (e) {
+      setState(() {
+        _errorMessage = 'Failed to add bill: $e';
+      });
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
   }
 
   @override
@@ -58,30 +143,55 @@ class _CreatePageState extends State<CreatePage> {
         selectedTab: selectedTab,
         onTabChanged: _updateCategories,
       ),
-      body: Column(
-        children: [
-          Expanded(
-            flex: 2,
-            child: CategoryGrid(
-              categories: categories,
-              selectedCategory: selectedCategory,
-              onCategorySelected: (category) {
-                setState(() {
-                  selectedCategory = category;
-                });
-              },
-            ),
-          ),
-          SizedBox(
-            height: 300, // 固定高度
-            child: InputPanel(
-              onSave: () {
-                Navigator.of(context).pushNamed('/home'); // 保存后跳转到首页
-              },
-            ),
-          ),
-        ],
-      ),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : _errorMessage != null
+              ? Center(
+                  child: Text(
+                    _errorMessage!,
+                    style: const TextStyle(color: Colors.red),
+                  ),
+                )
+              : Column(
+                  children: [
+                    Expanded(
+                      flex: 2,
+                      child: categories.isEmpty
+                          ? const Center(
+                              child: Text(
+                                'No categories available',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.grey,
+                                ),
+                              ),
+                            )
+                          : CategoryGrid(
+                              categories: categories,
+                              selectedCategory: selectedCategory,
+                              onCategorySelected: (category) {
+                                setState(() {
+                                  selectedCategory = category;
+                                });
+                              },
+                            ),
+                    ),
+                    SizedBox(
+                      height: 300,
+                      child: InputPanel(
+                        onSave: _saveBill,
+                        onAmountChanged: (value) {
+                          setState(() {
+                            amount = value;
+                          });
+                        },
+                        // onDateChanged: (date) {
+                        //   // 可选：扩展日期选择功能
+                        // },
+                      ),
+                    ),
+                  ],
+                ),
     );
   }
 }

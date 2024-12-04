@@ -1,31 +1,121 @@
 import 'package:flutter/material.dart';
-import 'package:i_budget/pages/test_data.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:i_budget/widgets/bill_list.dart';
 import 'package:i_budget/widgets/budget_summary.dart';
 import 'package:i_budget/widgets/home_app_bar.dart';
+import '../services/bill_service.dart';
+import '../services/budget_service.dart';
 import '../widgets/sidebar_menu.dart';
 import '../widgets/year_month_picker.dart';
 
 class HomePage extends StatefulWidget {
+  final String? userId;
+
+  const HomePage({this.userId, super.key});
+
   @override
-  _HomePageState createState() => _HomePageState();
+  HomePageState createState() => HomePageState();
 }
 
-class _HomePageState extends State<HomePage> {
+class HomePageState extends State<HomePage> {
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
+  final BillService _billService = BillService();
+  final BudgetService _budgetService = BudgetService();
 
-  int _selectedYear = DateTime.now().year; // 当前年份
-  int _selectedMonth = DateTime.now().month; // 当前月份
+  int _selectedYear = DateTime.now().year;
+  int _selectedMonth = DateTime.now().month;
 
-  // 显示日历选择器
+  List<Map<String, dynamic>> _bills = [];
+  int _totalBudget = 0;
+  int _consumed = 0;
+  String? _userId;
+  bool _isLoading = true;
+  String? _errorMessage;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeData();
+  }
+
+  Future<void> _initializeData() async {
+    try {
+      await _loadUserId();
+      if (_userId != null) {
+        await _loadData();
+      } else {
+        _redirectToLogin();
+      }
+    } catch (e) {
+      setState(() {
+        _errorMessage = 'Initialization error: $e';
+      });
+    }
+  }
+
+  Future<void> _loadUserId() async {
+    final prefs = await SharedPreferences.getInstance();
+    setState(() {
+      _userId = prefs.getString('userId');
+    });
+  }
+
+  Future<void> _loadData() async {
+    try {
+      setState(() {
+        _isLoading = true;
+        _errorMessage = null;
+      });
+
+      if (_userId == null) throw Exception('User ID is null');
+
+      final bills = await _billService.getBillsByDate(
+        userId: _userId!,
+        year: _selectedYear,
+        month: _selectedMonth,
+      );
+
+      final totalBudget = await _budgetService.getBudgetForMonth(
+        _selectedYear,
+        _selectedMonth,
+      );
+
+      final consumed = bills.fold(0, (sum, bill) {
+        final amount = bill['amount'];
+        if (amount == null || amount is! num) {
+          return sum;
+        }
+        return sum + amount.toInt();
+      });
+
+      setState(() {
+        _bills = bills;
+        _totalBudget = totalBudget ?? 0;
+        _consumed = consumed;
+      });
+    } catch (e) {
+      setState(() {
+        _errorMessage = 'Data loading error: $e';
+      });
+    } finally {
+      setState(() {
+        _isLoading = false;
+      });
+    }
+  }
+
+  void _redirectToLogin() {
+    Navigator.pushReplacementNamed(context, '/login');
+  }
+
   void _showYearMonthPicker() {
     showDialog(
       context: context,
       builder: (BuildContext context) {
         return Dialog(
-          backgroundColor: Colors.white, // 设置Dialog背景颜色为白色
+          backgroundColor: Colors.white,
           child: Container(
-            padding: EdgeInsets.all(16.0),
+            padding: const EdgeInsets.all(16.0),
             height: 400,
             child: YearMonthPicker(
               selectedYear: _selectedYear,
@@ -35,7 +125,8 @@ class _HomePageState extends State<HomePage> {
                   _selectedYear = year;
                   _selectedMonth = month;
                 });
-                Navigator.pop(context); // 关闭弹窗
+                Navigator.pop(context);
+                _loadData(); // Reload data after changing the year/month
               },
             ),
           ),
@@ -44,54 +135,80 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  // 点击加号按钮的事件
   void _onAddButtonPressed() {
-    Navigator.of(context).pushNamed('/create'); // 跳转到 /create 页面
+    if (_userId == null) {
+      debugPrint('User ID is null. Cannot add new item.');
+      return;
+    }
+
+    Navigator.of(context).pushNamed(
+      '/create',
+      arguments: {'userId': _userId},
+    ).then((result) {
+      if (result == true) {
+        _loadData();
+      }
+    });
   }
 
   @override
   Widget build(BuildContext context) {
+    final remaining = _totalBudget - _consumed;
+
     return Scaffold(
       key: _scaffoldKey,
-      backgroundColor: Colors.white, // 确保背景颜色为白色
+      backgroundColor: Colors.white,
       appBar: HomeAppBar(
         scaffoldKey: _scaffoldKey,
-        selectedDate: '$_selectedYear年$_selectedMonth月',
+        selectedDate: '$_selectedMonth / $_selectedYear',
         onMenuPressed: () {
           _scaffoldKey.currentState!.openDrawer();
         },
         onCalendarTap: _showYearMonthPicker,
       ),
-      drawer: SidebarMenu(), // 使用模块化的侧栏菜单
-      body: Container(
-        color: Colors.grey[100], // 整个body背景浅灰色
-        padding: EdgeInsets.all(10.0), // body的padding为10
-        child: Column(
-          children: [
-            BudgetSummary(
-              totalBudget: 2000,
-              consumed: 900,
-              remaining: 1100,
-            ),
-            SizedBox(height: 10.0), // 间距
-            BillList(
-              bills: testData,
-              height: 400.0, // 设置账单列表高度
-            ),
-          ],
-        ),
-      ),
+      drawer: SidebarMenu(),
+      body: _isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : _errorMessage != null
+              ? Center(
+                  child: Text(
+                    _errorMessage!,
+                    style: const TextStyle(color: Colors.red),
+                  ),
+                )
+              : Container(
+                  color: Colors.grey[100],
+                  padding: const EdgeInsets.all(10.0),
+                  child: SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        BudgetSummary(
+                          totalBudget: _totalBudget,
+                          consumed: _consumed,
+                          remaining: remaining,
+                        ),
+                        const SizedBox(height: 10.0),
+                        SizedBox(
+                          height: 400.0,
+                          child: BillList(
+                            bills: _bills,
+                            height: 400.0,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
       floatingActionButton: SizedBox(
-        width: 40, // 设置按钮宽度为40
-        height: 40, // 设置按钮高度为40
+        width: 40,
+        height: 40,
         child: FloatingActionButton(
           onPressed: _onAddButtonPressed,
-          backgroundColor: Color.fromRGBO(255, 196, 18, 1),
-          child: Icon(Icons.add),
+          backgroundColor: const Color.fromRGBO(255, 196, 18, 1),
+          child: const Icon(Icons.add),
         ),
       ),
-      floatingActionButtonLocation:
-          FloatingActionButtonLocation.centerFloat, // 浮动按钮位置设置为底部中央
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
     );
   }
 }

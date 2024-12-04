@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 class CategorizedList extends StatelessWidget {
   final List<Map<String, dynamic>> data;
 
-  CategorizedList({required this.data});
+  const CategorizedList({super.key, required this.data});
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +15,7 @@ class CategorizedList extends StatelessWidget {
             Row(
               children: [
                 Icon(Icons.circle, size: 8, color: item['color']),
-                SizedBox(width: 8),
+                const SizedBox(width: 8),
                 Text(item['type']),
               ],
             ),

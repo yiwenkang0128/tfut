@@ -4,7 +4,7 @@ class CustomYearPicker extends StatelessWidget {
   final int selectedYear;
   final Function(int) onYearChanged;
 
-  CustomYearPicker({
+  const CustomYearPicker({super.key, 
     required this.selectedYear,
     required this.onYearChanged,
   });

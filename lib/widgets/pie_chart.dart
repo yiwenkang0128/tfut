@@ -38,7 +38,7 @@ class PieChartPainter extends CustomPainter {
     final textPainter = TextPainter(
       text: TextSpan(
         text: '$consumedPercentage%',
-        style: TextStyle(fontSize: 12, color: Colors.black),
+        style: const TextStyle(fontSize: 12, color: Colors.black),
       ),
       textDirection: TextDirection.ltr,
     );

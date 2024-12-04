@@ -4,26 +4,26 @@ import 'dart:math';
 class CategorizedPieChart extends StatelessWidget {
   final List<Map<String, dynamic>> data;
 
-  CategorizedPieChart({required this.data});
+  const CategorizedPieChart({super.key, required this.data});
 
   @override
   Widget build(BuildContext context) {
     double totalAmount =
         data.fold(0.0, (sum, item) => sum + (item['amount'] as double));
 
-    return Container(
+    return SizedBox(
       height: 150, // 环状图高度
       width: 150, // 环状图宽度
       child: Stack(
         alignment: Alignment.center,
         children: [
           CustomPaint(
-            size: Size(150, 150), // 环状图大小
+            size: const Size(150, 150), // 环状图大小
             painter: _RingChartPainter(data: data, totalAmount: totalAmount),
           ),
           Text(
             "\$${totalAmount.toStringAsFixed(2)}",
-            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
+            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
         ],
       ),

@@ -7,12 +7,12 @@ class ProfileItem extends StatelessWidget {
   final VoidCallback onEdit;
 
   const ProfileItem({
-    Key? key,
+    super.key,
     required this.icon,
     required this.title,
     required this.value,
     required this.onEdit,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -21,7 +21,7 @@ class ProfileItem extends StatelessWidget {
       title: Text(title),
       subtitle: Text(value),
       trailing: IconButton(
-        icon: Icon(Icons.edit),
+        icon: const Icon(Icons.edit),
         onPressed: onEdit,
       ),
     );

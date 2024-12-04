@@ -5,7 +5,7 @@ class OverviewData extends StatelessWidget {
   final double income;
   final double balance;
 
-  OverviewData({
+  const OverviewData({super.key, 
     required this.expenditure,
     required this.income,
     required this.balance,
@@ -14,25 +14,25 @@ class OverviewData extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
         children: [
-          Text(
+          const Text(
             "收支总览",
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           Row(
             children: [
               Expanded(
                 child: Column(
                   children: [
-                    Text("支出"),
-                    Text("$expenditure", style: TextStyle(fontSize: 16)),
+                    const Text("Expense"),
+                    Text("$expenditure", style: const TextStyle(fontSize: 16)),
                   ],
                 ),
               ),
@@ -40,8 +40,8 @@ class OverviewData extends StatelessWidget {
               Expanded(
                 child: Column(
                   children: [
-                    Text("收入"),
-                    Text("$income", style: TextStyle(fontSize: 16)),
+                    const Text("Income"),
+                    Text("$income", style: const TextStyle(fontSize: 16)),
                   ],
                 ),
               ),
@@ -49,8 +49,8 @@ class OverviewData extends StatelessWidget {
               Expanded(
                 child: Column(
                   children: [
-                    Text("结余"),
-                    Text("$balance", style: TextStyle(fontSize: 16)),
+                    const Text("结余"),
+                    Text("$balance", style: const TextStyle(fontSize: 16)),
                   ],
                 ),
               ),

@@ -4,7 +4,7 @@ import 'categorized_pie_chart.dart';
 class CategorizedStatistics extends StatelessWidget {
   final List<Map<String, dynamic>> data;
 
-  CategorizedStatistics({required this.data});
+  const CategorizedStatistics({super.key, required this.data});
 
   @override
   Widget build(BuildContext context) {
@@ -12,21 +12,21 @@ class CategorizedStatistics extends StatelessWidget {
         data.fold(0.0, (sum, item) => sum + (item['amount'] as double));
 
     return Container(
-      padding: EdgeInsets.all(16),
+      padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(16),
       ),
       child: Column(
         children: [
-          Text(
+          const Text(
             "分类统计",
             style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           // 调用环状图
           CategorizedPieChart(data: data),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           // 分类列表
           Column(
             children: data.map((item) {
@@ -37,12 +37,12 @@ class CategorizedStatistics extends StatelessWidget {
                   Row(
                     children: [
                       Icon(Icons.circle, size: 8, color: item['color']),
-                      SizedBox(width: 8),
+                      const SizedBox(width: 8),
                       Text(
                         item['type'],
-                        style: TextStyle(fontSize: 15),
+                        style: const TextStyle(fontSize: 15),
                       ),
-                      SizedBox(width: 8),
+                      const SizedBox(width: 8),
                       Text(
                         "${percentage.toStringAsFixed(2)}%",
                         style: TextStyle(
@@ -54,7 +54,7 @@ class CategorizedStatistics extends StatelessWidget {
                   ),
                   Text(
                     "\$${item['amount'].toStringAsFixed(2)}",
-                    style: TextStyle(fontSize: 15),
+                    style: const TextStyle(fontSize: 15),
                   ),
                 ],
               );

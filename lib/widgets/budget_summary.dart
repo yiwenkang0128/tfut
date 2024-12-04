@@ -6,7 +6,8 @@ class BudgetSummary extends StatelessWidget {
   final int consumed; // 已消费
   final int remaining; // 剩余额度
 
-  BudgetSummary({
+  const BudgetSummary({
+    super.key,
     required this.totalBudget,
     required this.consumed,
     required this.remaining,
@@ -14,12 +15,13 @@ class BudgetSummary extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    int consumedPercentage = (consumed / totalBudget * 100).ceil();
+    int consumedPercentage =
+        totalBudget == 0 ? 0 : (consumed / totalBudget * 100).ceil();
 
     return Container(
       width: double.infinity,
       height: 100, // 固定高度
-      padding: EdgeInsets.all(10.0), // 内边距
+      padding: const EdgeInsets.all(10.0), // 内边距
       decoration: BoxDecoration(
         color: Colors.white, // 背景白色
         borderRadius: BorderRadius.circular(16.0), // 圆角
@@ -31,22 +33,22 @@ class BudgetSummary extends StatelessWidget {
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
+              const Text(
                 '本月预算',
                 style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
               ),
               Row(
                 children: [
-                  Icon(Icons.attach_money, size: 18, color: Colors.green),
+                  const Icon(Icons.attach_money, size: 18, color: Colors.green),
                   Text(
                     '$totalBudget',
-                    style: TextStyle(fontSize: 16, color: Colors.black),
+                    style: const TextStyle(fontSize: 16, color: Colors.black),
                   ),
                 ],
               ),
             ],
           ),
-          SizedBox(height: 10.0),
+          const SizedBox(height: 10.0),
           Row(
             children: [
               Expanded(
@@ -56,14 +58,16 @@ class BudgetSummary extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.attach_money, size: 18, color: Colors.blue),
+                        const Icon(Icons.attach_money,
+                            size: 18, color: Colors.blue),
                         Text(
                           '$remaining',
-                          style: TextStyle(fontSize: 14, color: Colors.black),
+                          style: const TextStyle(
+                              fontSize: 14, color: Colors.black),
                         ),
                       ],
                     ),
-                    Text(
+                    const Text(
                       '剩余额度',
                       style: TextStyle(fontSize: 12, color: Colors.black54),
                     ),
@@ -73,7 +77,7 @@ class BudgetSummary extends StatelessWidget {
               Container(
                 width: 1,
                 color: Colors.grey[300],
-                margin: EdgeInsets.symmetric(vertical: 5.0), // 短线间距
+                margin: const EdgeInsets.symmetric(vertical: 5.0), // 短线间距
               ),
               Expanded(
                 child: Column(
@@ -82,14 +86,16 @@ class BudgetSummary extends StatelessWidget {
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        Icon(Icons.attach_money, size: 18, color: Colors.red),
+                        const Icon(Icons.attach_money,
+                            size: 18, color: Colors.red),
                         Text(
                           '$consumed',
-                          style: TextStyle(fontSize: 14, color: Colors.black),
+                          style: const TextStyle(
+                              fontSize: 14, color: Colors.black),
                         ),
                       ],
                     ),
-                    Text(
+                    const Text(
                       '已消费',
                       style: TextStyle(fontSize: 12, color: Colors.black54),
                     ),
@@ -99,12 +105,12 @@ class BudgetSummary extends StatelessWidget {
               Container(
                 width: 1,
                 color: Colors.grey[300],
-                margin: EdgeInsets.symmetric(vertical: 5.0), // 短线间距
+                margin: const EdgeInsets.symmetric(vertical: 5.0), // 短线间距
               ),
               Expanded(
                 child: Center(
                   child: CustomPaint(
-                    size: Size(40, 40),
+                    size: const Size(40, 40),
                     painter: PieChartPainter(
                       consumedPercentage: consumedPercentage,
                     ),
